@@ -1,0 +1,83 @@
+
+<html>
+	<head>
+        <title>Tiles</title>
+        <link href="css/styl.css" rel="stylesheet"></link>
+        <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+		<meta charset="UTF-8">
+	</head>
+	<body>
+        <div class="canvasWrap"></div>
+        <div class="canvasText">Size of field is 5x5.</div>
+        <div class="canvasText"><input id="canvasRange" type="range" min="3" max="9" step="1"></div>
+        <div class="canvasText">Maximum tile count is 10.</div>
+        <div class="canvasText"><input id="canvasRange2" type="range" min="1" max="15" step="1"></div>
+        <div class="button">Click me.</div>
+    </body>
+    <script src="js/pixi.min.js"></script>
+    <script>
+        const app = new PIXI.Application({
+            width: 500, height: 380, backgroundColor: 0xFFFFFF, resolution: window.devicePixelRatio || 1,
+        });
+        document.getElementsByClassName("canvasWrap")[0].appendChild(app.view);
+        const container = new PIXI.Container();
+        app.stage.addChild(container);
+
+        const texture = [];
+        texture[0] = PIXI.Texture.from('img/o.png');
+        texture[1] = PIXI.Texture.from('img/y.png');
+        texture[2] = PIXI.Texture.from('img/g.png');
+        texture[3] = PIXI.Texture.from('img/b.png');
+        texture[4] = PIXI.Texture.from('img/p.png');
+
+        document.getElementById("canvasRange").value="5";
+        document.getElementById("canvasRange2").value="10";
+        var rows=document.getElementById("canvasRange").value;
+        var max=document.getElementById("canvasRange2").value;
+
+        document.getElementById("canvasRange").addEventListener('input', ()=>{
+            rows=parseInt(document.getElementById("canvasRange").value);
+            document.getElementsByClassName("canvasText")[0].innerHTML="Size of field is "+rows+"x"+rows+".";
+            document.getElementById("canvasRange2").max=(rows*rows);
+            max=document.getElementById("canvasRange2").value;
+            document.getElementsByClassName("canvasText")[2].innerHTML="Maximum tile count is "+max+".";
+        });
+
+        document.getElementById("canvasRange2").addEventListener('input', ()=>{
+            max=parseInt(document.getElementById("canvasRange2").value);
+            document.getElementsByClassName("canvasText")[2].innerHTML="Maximum tile count is "+max+".";
+        });      
+
+        fill=()=>{      
+            container.removeChildren();
+            let pole=shuffle();
+            for (let i = 0; i < max; i++) {
+                const tile = new PIXI.Sprite(texture[Math.floor(Math.random()*5)]);
+                tile.anchor.set(0.5);
+                tile.x = ((pole[i] % rows) * 40)+20;
+                tile.y = (Math.floor(pole[i] / rows) * 40)+20;
+                container.addChild(tile);
+            }
+
+        };
+
+        shuffle=()=>{
+            for (var array=[],i=0;i<(rows*rows);++i) array[i]=i;
+            var tmp, current, top = array.length;
+
+            if(top) while(--top) {
+                current = Math.floor(Math.random() * (top + 1));
+                tmp = array[current];
+                array[current] = array[top];
+                array[top] = tmp;
+            }
+
+            return array;
+        }
+
+        var button = document.getElementsByClassName("button");
+        button[0].onclick=()=>{
+            fill();
+        }
+    </script>
+</html>
